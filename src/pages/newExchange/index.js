@@ -48,17 +48,13 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
 
 
     const fetchData = () => {
-        console.log('first dis', loading)
         dispatch(toggleLoading(true));
-        console.log('balance', balance)
         fireRequests()
     }
 
     const fireRequests = () => {
         axios
             .get(API_URLS.EXCHANGE_RATE.GET_LATEST).then((response) => {
-                console.log(response)
-                console.log('sec dis', loading)
                 fillData(response)
                 dispatch(toggleLoading(false));
             });
@@ -81,41 +77,26 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
     }
 
     const selectFromCurrency = (changedValue) => {
-        console.log('selectFromCurrency', changedValue);
-        console.log('selectFromCurrency newval', fromCurrencies[changedValue]);
-
         setSelectedFromCurrencies(changedValue);
         resetNewValCurrencies(fromCurrencies);
         resetNewValCurrencies(toCurrencies);
     }
 
     const selectToCurrency = (changedValue) => {
-        console.log('selectToCurrency', changedValue);
         setSelectedToCurrencies(selectedToCurrencies => {
-            console.log('selectToCurrency 2', selectedToCurrencies);
             return changedValue;
         });
-        console.log('selectToCurrency 3', selectedToCurrencies);
 
         resetNewValCurrencies(toCurrencies);
-        console.log('selectToCurrency fromCurrencies[selectedFromCurrencies].newValue', fromCurrencies);
-        console.log('selectToCurrency fromCurrencies[selectedFromCurrencies].newValue', selectedFromCurrencies);
         convert(fromCurrencies[selectedFromCurrencies].newValue, changedValue);
     }
 
     const getRate = (selectedFrom = selectedFromCurrencies, selectedTo = selectedToCurrencies) => {
-        console.log('getRate fromCurrencies', fromCurrencies);
-        console.log('getRate fromCurrencies[selectedFromCurrencies]', fromCurrencies[selectedFrom]);
-
         let newCurrencyBaseRate = 1 / fromCurrencies[selectedFrom].value;
-        console.log('getRate toCurrencies', toCurrencies);
-        console.log('getRate toCurrencies[selectedToCurrencies]', toCurrencies[selectedTo]);
 
         let newToCurrencyBaseRate = 1 / toCurrencies[selectedTo].value;
-        console.log(` 1 ${fromCurrencies[selectedFrom].rate} = ${((newCurrencyBaseRate) / newToCurrencyBaseRate).toFixed(2).replace(/\.00$/, '')} ${toCurrencies[selectedTo].rate}`);
 
         setRate(` 1 ${fromCurrencies[selectedFrom].rate} = ${((newCurrencyBaseRate) / newToCurrencyBaseRate).toFixed(2).replace(/\.00$/, '')} ${toCurrencies[selectedTo].rate}`)
-        console.log('getRate done ');
 
     }
 
@@ -125,20 +106,14 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
         })
     }
     const convert = (val, toIndex = null) => {
-        console.log('convert', val);
-        console.log('convert', toIndex);
-        console.log('convert toCurrencies', toCurrencies);
         if (val &&
             RegExp('^-?[0-9]*(\.[0-9]{0,2})?$').test(val)) {
             setErrorMessage('')
             setSuccessMessage('')
-            //   if (toCurrencies.length > 0) {
             // to do get the base from dollar and convert it to the current base
             fromCurrencies[selectedFromCurrencies].newValue = val;
             setFromCurrencies([...fromCurrencies])
             const currentCurrency = fromCurrencies[selectedFromCurrencies]
-            console.log('convert fromCurrencies', fromCurrencies);
-            console.log('convert currentFromCurrency', currentCurrency);
 
             // 1 dollar = AED: 3.6732
             // AED = 1/3.6732 Dollar
@@ -149,7 +124,6 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
 
             let newToCurrencyBaseRate = 1 / (toIndex !== null ? toCurrencies[toIndex].value : toCurrencies[selectedToCurrencies].value);
 
-            // setRate(` 1 ${fromCurrencies[selectedFromCurrencies].rate} = ${((newCurrencyBaseRate) / newToCurrencyBaseRate).toFixed(2).replace(/\.00$/, '')} ${toIndex !== null ? toCurrencies[toIndex].rate : toCurrencies[selectedToCurrencies].rate}`)
             let convertedValue = ((newCurrencyBaseRate * val) / newToCurrencyBaseRate).toFixed(2).replace(/\.00$/, '');
 
             if (toIndex !== null) {
@@ -171,9 +145,7 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
             setNewRecord(newRecord)
 
         } else {
-            console.log('Strange val', val);
             val = val ? (+val).toFixed(2) : '';
-            console.log('Strange val 2', val);
             fromCurrencies[selectedFromCurrencies].newValue = val;
             setFromCurrencies([...fromCurrencies])
 
@@ -186,7 +158,6 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
                 } else {
                     toCurrencies[selectedToCurrencies].newValue = '';
                 }
-                console.log('convert newC', toCurrencies);
                 setToCurrencies([...toCurrencies]);
 
             }
@@ -195,20 +166,17 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
 
     const changeFromCurrentCurrency = () => {
         const result = balance.find(item => item.currency === fromCurrencies[selectedFromCurrencies].rate)
-        console.log('result', result);
         return ` ${result.amount} ${result.currency} `;
     }
 
     const changeToCurrentCurrency = () => {
         const result = balance.find(item => item.currency === toCurrencies[selectedToCurrencies].rate)
-        console.log('result', result);
         return ` ${result.amount} ${result.currency} `;
     }
 
     const excuteExchange = () => {
         const currency = balance.find(item => item.currency === newRecord.from)
         if (currency && currency.amount >= newRecord.value) {
-            console.log(newRecord);
             dispatch(addNewRecordToHistyory(newRecord));
             const newBalance = balance.map(item => {
                 if (item.currency === newRecord.from) {
@@ -223,7 +191,6 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
             resetNewValCurrencies(toCurrencies);
             dispatch(updateBalance(newBalance));
             setNewRecord({});
-            console.log(exchangeHistory);
         } else {
             setErrorMessage('Error in Exchange you must have number more the the value you need to exchange')
             setSuccessMessage('')

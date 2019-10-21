@@ -27,7 +27,6 @@ const Layout = ({ children, loading }) => {
 
   return (
     <>
-      {console.log(loading)}
       {/* <Header siteTitle={data.site.siteMetadata.title} /> */}
       <div
         style={{

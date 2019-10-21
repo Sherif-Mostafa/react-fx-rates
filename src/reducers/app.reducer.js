@@ -14,7 +14,6 @@ export default (state = initialState, action) => {
         case LOADING:
             return { ...state, loading: action.loading };
         case UPDATE_BALANCE:
-            console.log(action)
             return { ...state, balance: [...action.balance] };
 
         default:
