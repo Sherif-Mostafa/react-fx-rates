@@ -21,46 +21,112 @@ import UseInterval from "../../components/useInterval";
 import exchangeIcon from "../../images/exchange.png";
 import backIcon from "../../images/left-arrow.png";
 
-const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
 
+/**
+ * @property {boolean} loading Shows app loading status (from redux store)
+ * @property {[Object]} balance represents user Pockets (from redux store)
+ * @property {function} dispatch redux dispatch function to dispatch action creators 
+ * NewExchange Page to make exchanges from user Pockets
+ */
+const NewExchangePage = ({ loading, balance, dispatch }) => {
+    /** 
+     * @property {[]} fromCurrencies property in the component state to handle array of available currencies we can convert from 
+     * @method setFromCurrencies the method from useState hooks that allow to update fromCurrencies
+     */
     const [fromCurrencies, setFromCurrencies] = useState([]);
+    /** 
+    * @property {[]} toCurrencies property in the component state to handle array of available currencies we can convert to 
+    * @method setToCurrencies the method from useState hooks that allow to update toCurrencies
+    */
     const [toCurrencies, setToCurrencies] = useState([]);
+    /** 
+    * @property  selectedFromCurrencies property in the component state to handle index of current currency we need to convert from
+    * setSelectedFromCurrencies the method from useState hooks that allow to update selectedFromCurrencies
+    */
     const [selectedFromCurrencies, setSelectedFromCurrencies] = useState(0);
+    /** 
+    * @property  selectedToCurrencies property in the component state to handle index of current currency we need to convert to
+    * setSelectedToCurrencies the method from useState hooks that allow to update selectedToCurrencies
+    */
     const [selectedToCurrencies, setSelectedToCurrencies] = useState(0);
+    /** 
+    * @property  errorMessage property in the component state to contains any error message need to display  
+    * setErrorMessage the method from useState hooks that allow to update errorMessage
+    */
     const [errorMessage, setErrorMessage] = useState('');
+    /** 
+    * @property  successMessage property in the component state to contains any success message need to display  
+    * setSuccessMessage the method from useState hooks that allow to update successMessage
+    */
     const [successMessage, setSuccessMessage] = useState('');
+    /** 
+    * @property  runningInterval property in the component state to either allow interval or not 
+    * setRunningInterval the method from useState hooks that allow to update runningInterval
+    */
     const [runningInterval, setRunningInterval] = useState(true);
+    /** 
+    * @property  newRecord property in the component state to contains new History record of the latest exchange 
+    * setNewRecord the method from useState hooks that allow to update newRecord
+    */
     const [newRecord, setNewRecord] = useState({});
+    
+    /** 
+    * @property  rate property in the component state to display the rate between the currency we need to exchange from and the currency we need to exchange to
+    * setRate the method from useState hooks that allow to update rate
+    */
     const [rate, setRate] = useState('');
 
-    UseInterval(() => { fireRequests() }, runningInterval ? 10000 : null)
+    /** 
+    * @property  retry property in the component state to handle retry button if api call failed 
+    * setRetry the method from useState hooks that allow to update retry
+    */
+    const [retry, setRetry] = useState(false);
 
+    /** UseInterval component to handle setInterval calls that allows to stop interval anytime from component state */
+    UseInterval(() => { fireRequests() }, runningInterval ? 10000 : null);
+
+    /** 
+     * @method useEffect with empty array as deps that effect will only activate if the values in the list is empty
+     */
     useEffect(() => {
         fetchData();
         return () => { setRunningInterval(false); }
     }, []);
 
+    /** 
+     * @method useEffect with array as deps that effect will only activate if any values in the list changed
+     */
     useEffect(() => {
         if (!loading && fromCurrencies.length > 0 && toCurrencies.length > 0) {
             getRate();
         }
     }, [fromCurrencies, toCurrencies, selectedFromCurrencies, selectedToCurrencies]);
 
-
+    /** 
+     * @method fetchData this method to dispaly loading from redux store ( dispatch(toggleLoading(true)) ) and make exchange rates api call 
+     */
     const fetchData = () => {
+        setRetry(false);
         dispatch(toggleLoading(true));
-        fireRequests()
+        fireRequests();
     }
 
+    /** 
+     * @method fireRequests this method uses axios promise to fire the exchange rates api call and hide loading and fill component state data 
+     */
     const fireRequests = () => {
         axios
             .get(API_URLS.EXCHANGE_RATE.GET_LATEST).then((response) => {
                 fillData(response)
                 dispatch(toggleLoading(false));
-            });
-
+            }).catch(() => setRetry(true));
+        ;
     }
 
+    /** 
+     * @param response api response
+     * @method fillData this method fills component state data 
+     */
     const fillData = (response) => {
         const newFromOptions = [];
         const newToOptions = [];
@@ -76,12 +142,20 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
 
     }
 
+    /** 
+     * @param changedValue new Index
+     * @method selectFromCurrency called in carousel, changes the current fromCurrency  
+     */
     const selectFromCurrency = (changedValue) => {
         setSelectedFromCurrencies(changedValue);
         resetNewValCurrencies(fromCurrencies);
         resetNewValCurrencies(toCurrencies);
     }
 
+    /** 
+     * @param changedValue new Index
+     * @method selectToCurrency called in carousel, changes the current toCurrency  
+     */
     const selectToCurrency = (changedValue) => {
         setSelectedToCurrencies(selectedToCurrencies => {
             return changedValue;
@@ -91,20 +165,30 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
         convert(fromCurrencies[selectedFromCurrencies].newValue, changedValue);
     }
 
+    /**
+     * @method getRate gets the exchange rate between 1 unit from the current selected currency and the result of the to currency
+     */
     const getRate = (selectedFrom = selectedFromCurrencies, selectedTo = selectedToCurrencies) => {
         let newCurrencyBaseRate = 1 / fromCurrencies[selectedFrom].value;
-
         let newToCurrencyBaseRate = 1 / toCurrencies[selectedTo].value;
-
-        setRate(` 1 ${fromCurrencies[selectedFrom].rate} = ${((newCurrencyBaseRate) / newToCurrencyBaseRate).toFixed(2).replace(/\.00$/, '')} ${toCurrencies[selectedTo].rate}`)
-
+        setRate(` 1 ${fromCurrencies[selectedFrom].rate} = ${((newCurrencyBaseRate) / newToCurrencyBaseRate).toFixed(2).replace(/\.00$/, '')} ${toCurrencies[selectedTo].rate}`);
     }
 
+    /**
+     * @param newValArr represents the array we need to reset (fromCurrencies || toCurrencies)
+     * @method resetNewValCurrencies resets all items newValue of given array
+     */
     const resetNewValCurrencies = (newValArr) => {
         newValArr.forEach(item => {
             item.newValue = '';
         })
     }
+
+    /**
+     * @param val represents the value we need to convert
+     * @param toIndex represents index of the item in toCurrencies array we need to convert to with null default value
+     * @method convert responsible for the convertion between two currencies from user pocket
+     */
     const convert = (val, toIndex = null) => {
         if (val &&
             RegExp('^-?[0-9]*(\.[0-9]{0,2})?$').test(val)) {
@@ -151,7 +235,7 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
 
             if (val) {
                 setSuccessMessage('')
-                setErrorMessage('Error in Number you entered please make sure it contains only numbers with two digits after the dot')
+                setErrorMessage('Number Format Error: Please enter an amount with no more than two digits after the dot')
             } else {
                 if (toIndex !== null) {
                     toCurrencies[toIndex].newValue = '';
@@ -164,16 +248,19 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
         }
     }
 
-    const changeFromCurrentCurrency = () => {
-        const result = balance.find(item => item.currency === fromCurrencies[selectedFromCurrencies].rate)
+    /**
+     * @param currenciesArr represents the currency array
+     * @param selectedIndex represents index of the item in currenciesArr array we have in Pocket
+     * @method changeCurrentCurrency responsible for displaying the amount of this index of that currencyArry we have in pocket
+     */
+    const changeCurrentCurrency = (currenciesArr, selectedIndex) => {
+        const result = balance.find(item => item.currency === currenciesArr[selectedIndex].rate)
         return ` ${result.amount} ${result.currency} `;
     }
 
-    const changeToCurrentCurrency = () => {
-        const result = balance.find(item => item.currency === toCurrencies[selectedToCurrencies].rate)
-        return ` ${result.amount} ${result.currency} `;
-    }
-
+    /**
+     * @method excuteExchange responsible for executing the exchange and adding this transaction in history
+     */
     const excuteExchange = () => {
         const currency = balance.find(item => item.currency === newRecord.from)
         if (currency && currency.amount >= newRecord.value) {
@@ -192,16 +279,22 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
             dispatch(updateBalance(newBalance));
             setNewRecord({});
         } else {
-            setErrorMessage('Error in Exchange you must have number more the the value you need to exchange')
+            setErrorMessage('Exchanging Error: You can not exchange amount more than what you have in your pocket')
             setSuccessMessage('')
             setNewRecord({});
         }
 
     }
+
+    /**
+     * @param selected selected currency
+     * @method getSymbol responsible for displaying selected currency's symbol
+     */
     const getSymbol = (selected) => {
         const result = balance.find(item => item.currency === selected.rate)
         return result.symbol || '';
     }
+    
     return (
         <Layout>
             <SEO title="Home" />
@@ -211,6 +304,12 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
             }
             {
                 successMessage && <div className='alert alert-success'> {successMessage} <Link to="/#history">... Check History </Link> </div>
+            }
+            {
+                retry && <div className='retry '>
+                    <div className="alert alert-danger">Something Went Wrong </div>
+                    <button className='btn btn-secondary' onClick={() => fetchData()}>Retry</button>
+                </div>
             }
             <div>
                 {
@@ -228,7 +327,7 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
                                             value={element.newValue}
                                         ></TextBox>
                                         <div className='currency-pocket'> You Have
-                                                {changeFromCurrentCurrency()}
+                                                {changeCurrentCurrency(fromCurrencies, selectedFromCurrencies)}
                                         </div>
                                     </div>
                                 )
@@ -253,7 +352,7 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
                                         ></TextBox>
                                         <div className='row'>
                                             <div className='currency-rate col-md-6'> {rate}  </div> <div className='currency-pocket col-md-6'> You Have
-                                                {changeToCurrentCurrency()}
+                                                {changeCurrentCurrency(toCurrencies, selectedToCurrencies)}
                                             </div>
                                         </div>
                                     </div>
@@ -269,12 +368,11 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
                     </>
                 }
             </div>
-        </Layout>
+        </Layout >
     )
 }
 
 export default connect(store => ({
     loading: store.app.loading,
     balance: store.app.balance,
-    exchangeHistory: store.exchange.history
 }), null)(NewExchangePage)

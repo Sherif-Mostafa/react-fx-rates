@@ -175,3 +175,9 @@ input[type="number"] {
 main {
   min-height: 625px;
 }
+
+.retry {
+  margin: 0 auto;
+  height: 200px;
+  text-align: center;
+}
