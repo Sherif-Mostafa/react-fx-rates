@@ -69,7 +69,7 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
     * setNewRecord the method from useState hooks that allow to update newRecord
     */
     const [newRecord, setNewRecord] = useState({});
-    
+
     /** 
     * @property  rate property in the component state to display the rate between the currency we need to exchange from and the currency we need to exchange to
     * setRate the method from useState hooks that allow to update rate
@@ -273,14 +273,16 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
                     item.amount = +(+item.amount + +newRecord.result).toFixed(2);
                 }
             })
+            setErrorMessage('');
+
             setSuccessMessage('Exchange Done Successfully');
             resetNewValCurrencies(fromCurrencies);
             resetNewValCurrencies(toCurrencies);
             dispatch(updateBalance(newBalance));
             setNewRecord({});
         } else {
-            setErrorMessage('Exchanging Error: You can not exchange amount more than what you have in your pocket')
-            setSuccessMessage('')
+            setErrorMessage('Exchanging Error: You can not exchange amount more than what you have in your pocket');
+            setSuccessMessage('');
             setNewRecord({});
         }
 
@@ -294,7 +296,7 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
         const result = balance.find(item => item.currency === selected.rate)
         return result.symbol || '';
     }
-    
+
     return (
         <Layout>
             <SEO title="Home" />
