@@ -21,8 +21,6 @@ import UseInterval from "../../components/useInterval";
 import exchangeIcon from "../../images/exchange.png";
 import backIcon from "../../images/left-arrow.png";
 
-console.log('styles 1', styles)
-
 const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
 
     const [fromCurrencies, setFromCurrencies] = useState([]);
@@ -35,7 +33,7 @@ const NewExchangePage = ({ loading, balance, exchangeHistory, dispatch }) => {
     const [newRecord, setNewRecord] = useState({});
     const [rate, setRate] = useState('');
 
-    // UseInterval(() => { fireRequests() }, runningInterval ? 10000 : null)
+    UseInterval(() => { fireRequests() }, runningInterval ? 10000 : null)
 
     useEffect(() => {
         fetchData();
