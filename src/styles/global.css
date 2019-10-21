@@ -1,0 +1,177 @@
+.box-image {
+  margin: auto;
+  margin-right: 5px;
+  width: 20px;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #0072bc;
+  border-color: #0072bc;
+  margin: 0 auto;
+}
+
+.card-container {
+  display: inline-block;
+}
+
+.card-title {
+  font-size: 15px;
+  color: #0072bc;
+}
+
+.card.currency {
+  padding: 1rem;
+}
+
+.card .currency-symbol {
+  font-size: 60px;
+  color: #0072bc;
+}
+
+.card .code {
+  color: gray;
+  font-size: small;
+}
+.card:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  -webkit-transform: scale(1.01);
+  transform: scale(1.01);
+  -webkit-transition: ease-out 0.3s;
+  -moz-transition: ease-out 0.3s;
+  -o-transition: ease-out 0.3s;
+  transition: ease-out 0.3s;
+}
+
+body {
+  background-color: #f6f6f6;
+}
+
+.exchang-btn {
+  margin: 0 auto;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.title {
+  color: #0072bc;
+  margin-top: 50px;
+}
+.carousel.carousel-slider {
+  width: auto !important;
+}
+
+.slide-from .slide {
+  background: #0072b6 !important;
+  height: 215px;
+}
+
+.slide-to .slide {
+  background: white !important;
+  height: 215px;
+}
+
+.slide-to input[type="number"] {
+  color: #0072bc;
+}
+
+.slide-from input[type="number"] {
+  color: white;
+}
+.slide input[type="number"] {
+  background: none !important;
+  border: none;
+  font-size: 45px;
+  text-align: left;
+  position: relative;
+  left: 0px;
+  width: 90%;
+}
+
+.slide-from .currency-code {
+  color: white;
+  text-align: left;
+  font-size: 30px;
+}
+
+.slide-to .currency-code {
+  color: #0072bc;
+  text-align: left;
+  font-size: 30px;
+}
+
+.slide-from .currency-pocket {
+  text-align: right;
+  color: white;
+}
+
+.slide-to .currency-pocket {
+  text-align: right;
+  display: inline-block;
+  color: #0072bc;
+}
+.currency-rate {
+  text-align: left;
+  display: inline-block;
+}
+.currency-container {
+  padding: 30px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"]:focus,
+input[type="number"]:active {
+  outline: none;
+}
+
+input[type="number"] {
+  display: inline-block;
+}
+
+.slide-to .currency {
+  color: #0072bc;
+  text-align: left;
+  font-size: 45px;
+}
+
+.slide-from .currency {
+  color: white;
+  text-align: left;
+  font-size: 45px;
+}
+
+::placeholder {
+  color: gainsboro;
+  opacity: 1;
+}
+.spinner {
+  margin: 0 auto;
+  height: 200px;
+  text-align: center;
+  line-height: 400px
+}
+.spinner #box-image {
+  height: 100px;
+}
+
+.back {
+  color: #0072bc;
+  text-align: left;
+  font-size: 25px;
+  vertical-align: middle;
+  padding-left: 10px;
+}
+.back-header img {
+  height: 25px;
+}
+.back-header {
+  margin: 30px 0px;
+}
+
+main {
+  min-height: 625px;
+}

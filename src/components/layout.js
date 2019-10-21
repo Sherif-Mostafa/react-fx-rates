@@ -11,8 +11,10 @@ import { useStaticQuery, graphql } from "gatsby"
 
 import Header from "./header"
 import "./layout.css"
+import { connect } from "react-redux";
+import spinner from "../images/loading.gif"
 
-const Layout = ({ children }) => {
+const Layout = ({ children, loading }) => {
   const data = useStaticQuery(graphql`
     query SiteTitleQuery {
       site {
@@ -25,7 +27,8 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      <Header siteTitle={data.site.siteMetadata.title} />
+      {console.log(loading)}
+      {/* <Header siteTitle={data.site.siteMetadata.title} /> */}
       <div
         style={{
           margin: `0 auto`,
@@ -34,7 +37,7 @@ const Layout = ({ children }) => {
           paddingTop: 0,
         }}
       >
-        <main>{children}</main>
+        <main>{children}{loading && <div className='spinner'> <img id="box-image" src={spinner} />  </div>}</main>
         <footer>
           © {new Date().getFullYear()}, Built with
           {` `}
@@ -49,4 +52,7 @@ Layout.propTypes = {
   children: PropTypes.node.isRequired,
 }
 
-export default Layout
+export default connect(state => ({
+  loading: state.app.loading
+}), null)(Layout)
+
