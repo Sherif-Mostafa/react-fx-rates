@@ -40,8 +40,8 @@ const IndexPage = ({ balance, exchangeHistory, dispatch }) => (
         < table id='history' className='table table-striped'>
           <thead>
             <tr>
-              <th>To Exchange</th>
-              <th>Exchanged Amount</th>
+              <th>Exchanged From</th>
+              <th>Exchanged To</th>
               <th>Date</th>
             </tr>
           </thead>

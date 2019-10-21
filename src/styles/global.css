@@ -51,11 +51,13 @@ body {
   margin: 0 auto;
   text-align: center;
   margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .title {
   color: #0072bc;
-  margin-top: 50px;
+  margin-top: 40px;
+  margin-bottom: 25px;
 }
 .carousel.carousel-slider {
   width: auto !important;
@@ -152,7 +154,7 @@ input[type="number"] {
   margin: 0 auto;
   height: 200px;
   text-align: center;
-  line-height: 400px
+  line-height: 400px;
 }
 .spinner #box-image {
   height: 100px;
