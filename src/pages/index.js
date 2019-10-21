@@ -8,7 +8,7 @@ import exchangeIcon from "../images/exchange.png";
 import { toggleLoading } from "../actions/app.action";
 import { connect } from "react-redux";
 
-const IndexPage = ({ loading, balance, exchangeHistory, dispatch }) => (
+const IndexPage = ({ balance, exchangeHistory, dispatch }) => (
   <Layout>
     <SEO title="Home" />
     <h2 className="title">Pockets</h2>
@@ -65,7 +65,6 @@ const IndexPage = ({ loading, balance, exchangeHistory, dispatch }) => (
 )
 
 export default connect(store => ({
-  loading: store.app.loading,
   exchangeHistory: store.exchange.history,
   balance: store.app.balance,
 }), null)(IndexPage)

@@ -33,6 +33,7 @@
     "enzyme-to-json": "^3.4.3",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^24.9.0",
+    "jsdoc": "^3.6.3",
     "prettier": "^1.18.2",
     "react-test-renderer": "^16.10.2",
     "redux-mock-store": "^1.5.3"
@@ -47,7 +48,8 @@
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "start": "npm run develop",
     "serve": "gatsby serve",
-    "test": "jest"
+    "test": "jest",
+    "generate-docs": "jsdoc -c ./conf.json"
   },
   "repository": {
     "type": "git",
