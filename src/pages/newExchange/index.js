@@ -3,7 +3,7 @@ import { Link } from "gatsby"
 
 import Layout from "../../components/layout"
 import SEO from "../../components/seo"
-import TextBox from "../../components/textbox";
+import CurrencyCarousel from "../../components/currencyCarousel";
 
 import styles from "./newexchange.module.css"
 import { connect } from "react-redux";
@@ -14,7 +14,6 @@ import axios from 'axios'
 import { API_URLS } from "../../shared/constants/routes-configs";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Carousel } from "react-responsive-carousel";
 
 import { ExchangeHistory } from "../../shared/models/history.model";
 import UseInterval from "../../components/useInterval";
@@ -75,12 +74,6 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
     const [newRecord, setNewRecord] = useState({});
 
     /** 
-    * @property  rate property in the component state to display the rate between the currency we need to exchange from and the currency we need to exchange to
-    * setRate the method from useState hooks that allow to update rate
-    */
-    const [rate, setRate] = useState('');
-
-    /** 
     * @property  retry property in the component state to handle retry button if api call failed 
     * setRetry the method from useState hooks that allow to update retry
     */
@@ -96,15 +89,6 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
         fetchData();
         return () => { setRunningInterval(false); }
     }, []);
-
-    /** 
-     * @method useEffect with array as deps that effect will only activate if any values in the list changed
-     */
-    useEffect(() => {
-        if (!loading && fromCurrencies.length > 0 && toCurrencies.length > 0) {
-            getRate();
-        }
-    }, [fromCurrencies, toCurrencies, selectedFromCurrencies, selectedToCurrencies]);
 
     /** 
      * @method fetchData this method to dispaly loading from redux store ( dispatch(toggleLoading(true)) ) and make exchange rates api call 
@@ -140,10 +124,6 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
         }
         setFromCurrencies([...newFromOptions]);
         setToCurrencies([...newToOptions]);
-        if (fromCurrencies.length > 0 && toCurrencies.length > 0) {
-            getRate();
-        }
-
     }
 
     /** 
@@ -175,7 +155,7 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
     const getRate = (selectedFrom = selectedFromCurrencies, selectedTo = selectedToCurrencies) => {
         let newCurrencyBaseRate = 1 / fromCurrencies[selectedFrom].value;
         let newToCurrencyBaseRate = 1 / toCurrencies[selectedTo].value;
-        setRate(` 1 ${fromCurrencies[selectedFrom].rate} = ${toFixedWithoutRounding(((newCurrencyBaseRate) / newToCurrencyBaseRate)).toString().replace(/\.00$/, '')} ${toCurrencies[selectedTo].rate}`);
+        return ` 1 ${fromCurrencies[selectedFrom].rate} = ${toFixedWithoutRounding(((newCurrencyBaseRate) / newToCurrencyBaseRate)).toString().replace(/\.00$/, '')} ${toCurrencies[selectedTo].rate}`;
     }
 
     /**
@@ -195,7 +175,7 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
      */
     const convert = (val, toIndex = null) => {
         if (val &&
-            RegExp('^-?[0-9]*(\.[0-9]{0,2})?$').test(val)) {
+            RegExp('^-?[0-9]*(.[0-9]{0,2})?$').test(val)) {
             setErrorMessage('')
             setSuccessMessage('')
             // to do get the base from dollar and convert it to the current base
@@ -269,7 +249,7 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
         const currency = balance.find(item => item.currency === newRecord.from)
         if (currency && currency.amount >= newRecord.value) {
             dispatch(addNewRecordToHistyory(newRecord));
-            const newBalance = balance.map(item => {
+            const newBalance = balance.forEach(item => {
                 if (item.currency === newRecord.from) {
                     item.amount = toFixedWithoutRounding(+(+item.amount - +newRecord.value));
                 }
@@ -319,52 +299,41 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
             }
             <div>
                 {
-                    !loading && fromCurrencies.length > 0 && <>
-                        <Carousel className={`${styles.sliderContainer} col-md-6 col-sm-12 slide-from`} showArrows={true} onChange={(item) => { selectFromCurrency(item) }} selectedItem={selectedFromCurrencies} useKeyboardArrows={true} showThumbs={false} verticalSwipe='natural' width='40%' >
-                            {
-                                fromCurrencies.map((element, i) =>
-                                    <div className='currency-container' key={i}>
-                                        <div className='currency-code'>{element.rate}</div>
-                                        <span className='currency'> {getSymbol(fromCurrencies[selectedFromCurrencies])}</span>   <TextBox
-                                            key={i}
-                                            type="number"
-                                            placeholder='0.00'
-                                            onChange={(event) => convert(event.target.value)}
-                                            value={element.newValue}
-                                        ></TextBox>
-                                        <div className='currency-pocket'> You Have
-                                                {changeCurrentCurrency(fromCurrencies, selectedFromCurrencies)}
-                                        </div>
-                                    </div>
-                                )
-                            }
-                        </Carousel>
+                    !loading && fromCurrencies.length > 0 &&
+                    <>
+                        <CurrencyCarousel
+                            stylesContainer={styles.sliderContainer}
+                            style=' slide-from'
+                            selectCurrency={selectFromCurrency}
+                            selected={selectedFromCurrencies}
+                            currencies={fromCurrencies}
+                            getSymbol={getSymbol}
+                            convert={convert}
+                            changeCurrentCurrency={changeCurrentCurrency}
+                            disabled={false}
+                            defualt={''}
+                        >
+                        </CurrencyCarousel>
                     </>
                 }
 
                 {
-                    !loading && fromCurrencies.length > 0 && toCurrencies.length > 0 && <>
-                        <Carousel className={`${styles.sliderContainer} col-md-6 col-sm-12 slide-to`} showArrows={true} onChange={(event) => selectToCurrency(event)} selectedItem={selectedToCurrencies} useKeyboardArrows={true} showThumbs={false} verticalSwipe='natural' width='40%' >
-                            {
-                                toCurrencies.map((element, i) =>
-                                    <div className='currency-container' key={i}>
-                                        <div className='currency-code'>{element.rate}</div>
-                                        <span className='currency'> {getSymbol(toCurrencies[selectedToCurrencies])}</span>   <TextBox
-                                            key={i}
-                                            type="number"
-                                            placeholder='0.00'
-                                            value={element ? element.newValue : '0.00'}
-                                            disabled={true}
-                                        ></TextBox>
-                                        <div className='row'>
-                                            <div className='currency-rate col-md-6'> {rate}  </div> <div className='currency-pocket col-md-6'> You Have
-                                                {changeCurrentCurrency(toCurrencies, selectedToCurrencies)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )
-                            }
-                        </Carousel>
+                    !loading && fromCurrencies.length > 0 && toCurrencies.length > 0 &&
+                    <>
+                        <CurrencyCarousel
+                            stylesContainer={`${styles.sliderContainer}`}
+                            style=' slide-to'
+                            selectCurrency={selectToCurrency}
+                            selected={selectedToCurrencies}
+                            currencies={toCurrencies}
+                            getSymbol={getSymbol}
+                            changeCurrentCurrency={changeCurrentCurrency}
+                            disabled={true}
+                            default={'0.00'}
+                            rate={getRate}
+                        >
+                        </CurrencyCarousel>
+
                         <div className="exchang-btn">
                             <button className="btn btn-primary" disabled={!toCurrencies[selectedToCurrencies].newValue} onClick={() => excuteExchange()} >
                                 <img src={exchangeIcon} className="box-image" />
