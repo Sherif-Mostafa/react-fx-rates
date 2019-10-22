@@ -21,6 +21,10 @@ import UseInterval from "../../components/useInterval";
 import exchangeIcon from "../../images/exchange.png";
 import backIcon from "../../images/left-arrow.png";
 
+const toFixedWithoutRounding = (number) => {
+    return +(number.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0])
+}
+
 
 /**
  * @property {boolean} loading Shows app loading status (from redux store)
@@ -171,7 +175,7 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
     const getRate = (selectedFrom = selectedFromCurrencies, selectedTo = selectedToCurrencies) => {
         let newCurrencyBaseRate = 1 / fromCurrencies[selectedFrom].value;
         let newToCurrencyBaseRate = 1 / toCurrencies[selectedTo].value;
-        setRate(` 1 ${fromCurrencies[selectedFrom].rate} = ${((newCurrencyBaseRate) / newToCurrencyBaseRate).toFixed(2).replace(/\.00$/, '')} ${toCurrencies[selectedTo].rate}`);
+        setRate(` 1 ${fromCurrencies[selectedFrom].rate} = ${toFixedWithoutRounding(((newCurrencyBaseRate) / newToCurrencyBaseRate)).toString().replace(/\.00$/, '')} ${toCurrencies[selectedTo].rate}`);
     }
 
     /**
@@ -208,7 +212,7 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
 
             let newToCurrencyBaseRate = 1 / (toIndex !== null ? toCurrencies[toIndex].value : toCurrencies[selectedToCurrencies].value);
 
-            let convertedValue = ((newCurrencyBaseRate * val) / newToCurrencyBaseRate).toFixed(2).replace(/\.00$/, '');
+            let convertedValue = toFixedWithoutRounding(((newCurrencyBaseRate * val) / newToCurrencyBaseRate)).toString().replace(/\.00$/, '');
 
             if (toIndex !== null) {
                 toCurrencies[toIndex].newValue = convertedValue;
@@ -229,7 +233,7 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
             setNewRecord(newRecord)
 
         } else {
-            val = val ? (+val).toFixed(2) : '';
+            val = val ? toFixedWithoutRounding((+val)) : '';
             fromCurrencies[selectedFromCurrencies].newValue = val;
             setFromCurrencies([...fromCurrencies])
 
@@ -267,10 +271,10 @@ const NewExchangePage = ({ loading, balance, dispatch }) => {
             dispatch(addNewRecordToHistyory(newRecord));
             const newBalance = balance.map(item => {
                 if (item.currency === newRecord.from) {
-                    item.amount = +(+item.amount - +newRecord.value).toFixed(2);
+                    item.amount = toFixedWithoutRounding(+(+item.amount - +newRecord.value));
                 }
                 if (item.currency === newRecord.to) {
-                    item.amount = +(+item.amount + +newRecord.result).toFixed(2);
+                    item.amount = toFixedWithoutRounding(+(+item.amount + +newRecord.result));
                 }
             })
             setErrorMessage('');
