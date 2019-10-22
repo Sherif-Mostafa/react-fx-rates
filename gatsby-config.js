@@ -1,8 +1,11 @@
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Default Starter`,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
-    author: `@gatsbyjs`,
+    title: `React FX Rates`,
+    description: `This app is made with react, redux and gatsby. It exchanges currency from pocket to another currency and displays the history of this transactions.
+
+    it has three default pockets: GBP, EUR, USA.
+    `,
+    author: `@Sherif Mostafa`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
